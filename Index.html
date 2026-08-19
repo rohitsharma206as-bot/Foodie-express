@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Delivery App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f8f8;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .restaurant {
+            border-bottom: 2px solid #eee;
+            padding-bottom: 15px;
+            margin-bottom: 15px;
+        }
+        .restaurant h2 {
+            color: #e65c00;
+        }
+        .menu-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #f2f2f2;
+        }
+        .add-btn {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .cart-summary {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 2px solid #330;
+            font-size: 18px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Food Delivery</h1>
+
+    <div class="restaurant">
+        <h2>Taste of India</h2>
+        <div class="menu-item">
+            <span>Butter Chicken - $12</span>
+            <button class="add-btn" onclick="addToCart('Butter Chicken', 12)">Add</button>
+        </div>
+        <div class="menu-item">
+            <span>Naan - $2</span>
+            <button class="add-btn" onclick="addToCart('Naan', 2)">Add</button>
+        </div>
+    </div>
+
+    <div class="restaurant">
+        <h2>Pizza Corner</h2>
+        <div class="menu-item">
+            <span>Margherita Pizza - $10</span>
+            <button class="add-btn" onclick="addToCart('Margherita Pizza', 10)">Add</button>
+        </div>
+        <div class="menu-item">
+            <span>Garlic Bread - $5</span>
+            <button class="add-btn" onclick="addToCart('Garlic Bread', 5)">Add</button>
+        </div>
+    </div>
+
+    <div class="cart-summary" id="cart-summary">
+        Total: $0
+    </div>
+</div>
+
+<script>
+    let cartTotal = 0;
+    function addToCart(item, price) {
+        cartTotal += price;
+        document.getElementById('cart-summary').innerText = "Total: $" + cartTotal;
+    }
+</script>
+
+</body>
+</html>
