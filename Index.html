@@ -5,95 +5,107 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Food Delivery App</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f8f8f8;
-            margin: 0;
-            padding: 20px;
-        }
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-        h1 {
-            text-align: center;
-            color: #333;
-        }
-        .restaurant {
-            border-bottom: 2px solid #eee;
-            padding-bottom: 15px;
-            margin-bottom: 15px;
-        }
-        .restaurant h2 {
-            color: #e65c00;
-        }
-        .menu-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 8px 0;
-            border-bottom: 1px solid #f2f2f2;
-        }
-        .add-btn {
-            background-color: #28a745;
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        .cart-summary {
-            margin-top: 20px;
-            padding-top: 15px;
-            border-top: 2px solid #330;
-            font-size: 18px;
-            font-weight: bold;
-        }
+        body { font-family: Arial, sans-serif; padding: 20px; background-color: #f8f8f8; }
+        .container { max-width: 600px; margin: 0 auto; background: #fff; padding: 20px; border-radius: 8px; }
+        h1, h2 { text-align: center; }
+        .restaurant { border-bottom: 2px solid #eee; padding-bottom: 15px; margin-bottom: 15px; }
+        .menu-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; }
+        .add-btn { background-color: #28a475; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; }
+        .form-group { margin-bottom: 10px; }
+        .form-group label { display: block; margin-bottom: 5px; }
+        .form-group input { width: 100%; padding: 8px; box-sizing: border-box; }
+        button[type="submit"] { background-color: #007bff; color: white; border: none; padding: 10px 15px; border-radius: 4px; cursor: pointer; width: 100%; }
+        .cart-summary { margin-top: 20px; padding-top: 15px; border-top: 2px solid #330; font-size: 18px; font-weight: bold; }
+        .order-btn { background-color: #ff9800; color: white; border: none; padding: 10px; border-radius: 4px; cursor: pointer; width: 100%; margin-top: 10px; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>Food Delivery</h1>
+    <h1>Food Delivery App</h1>
 
     <div class="restaurant">
-        <h2>Taste of India</h2>
-        <div class="menu-item">
-            <span>Butter Chicken - $12</span>
-            <button class="add-btn" onclick="addToCart('Butter Chicken', 12)">Add</button>
-        </div>
-        <div class="menu-item">
-            <span>Naan - $2</span>
-            <button class="add-btn" onclick="addToCart('Naan', 2)">Add</button>
-        </div>
+        <h2>Add a Restaurant</h2>
+        <form id="add-restaurant-form">
+            <div class="form-group">
+                <label for="res-name">Restaurant Name:</label>
+                <input type="text" id="res-name" required>
+            </div>
+            <button type="submit">Add Restaurant</button>
+        </form>
     </div>
 
-    <div class="restaurant">
-        <h2>Pizza Corner</h2>
-        <div class="menu-item">
-            <span>Margherita Pizza - $10</span>
-            <button class="add-btn" onclick="addToCart('Margherita Pizza', 10)">Add</button>
-        </div>
-        <div class="menu-item">
-            <span>Garlic Bread - $5</span>
-            <button class="add-btn" onclick="addToCart('Garlic Bread', 5)">Add</button>
-        </div>
+    <div id="restaurants-container">
+        <!-- Restaurants and menus will appear here -->
     </div>
 
     <div class="cart-summary" id="cart-summary">
         Total: $0
     </div>
+    <button class="order-btn" onclick="placeOrder()">Order Now</button>
+
 </div>
 
 <script>
     let cartTotal = 0;
+    let restaurants = [];
+
+    document.getElementById('add-restaurant-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const name = document.getElementById('res-name').value;
+        restaurants.push({ name: name, menu: [] });
+        document.getElementById('res-name').value = '';
+        renderRestaurants();
+    });
+
+    function renderRestaurants() {
+        const container = document.getElementById('restaurants-container');
+        container.innerHTML = '';
+        restaurants.forEach((res, resIndex) => {
+            const div = document.createElement('div');
+            div.className = 'restaurant';
+            div.innerHTML = `
+                <h3>${res.name}</h3>
+                <h4>Menu</h4>
+                <div class="form-group">
+                    <input type="text" id="item-name-${resIndex}" placeholder="Item Name">
+                    <input type="number" id="item-price-${resIndex}" placeholder="Price">
+                    <button onclick="addItem(${resIndex})">Add Item to Menu</button>
+                </div>
+                <div id="menu-${resIndex}"></div>
+            `;
+            const menuContainer = div.querySelector(`#menu-${resIndex}`);
+            res.menu.forEach((item) => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'menu-item';
+                itemDiv.innerHTML = `
+                    <span>${item.name} - $${item.price}</span>
+                    <button class="add-btn" onclick="addToCart('${item.name}', ${item.price})">Add</button>
+                `;
+                menuContainer.appendChild(itemDiv);
+            });
+            container.appendChild(div);
+        });
+    }
+
+    function addItem(resIndex) {
+        const itemName = document.getElementById(`item-name-${resIndex}`).value;
+        const itemPrice = parseFloat(document.getElementById(`item-price-${resIndex}`).value);
+        if (itemName && !isNaN(itemPrice)) {
+            restaurants[resIndex].menu.push({ name: itemName, price: itemPrice });
+            renderRestaurants();
+        }
+    }
+
     function addToCart(item, price) {
         cartTotal += price;
         document.getElementById('cart-summary').innerText = "Total: $" + cartTotal;
+    }
+
+    function placeOrder() {
+        cartTotal = 0;
+        document.getElementById('cart-summary').innerText = "Total: $" + cartTotal;
+        alert("Order placed successfully!");
     }
 </script>
 
